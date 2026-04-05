@@ -39,15 +39,12 @@
             padding: 0;
         }
 
-        /* Убираем стрелки у инпутов */
         input[type="number"]::-webkit-inner-spin-button,
         input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         
-        /* Скрытие скроллбара */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Анимации */
         .fade-in { animation: fadeIn 0.25s ease-out forwards; }
         .slide-in-right { animation: slideInRight 0.25s ease-out forwards; }
         .slide-in-bottom { animation: slideInBottom 0.25s ease-out forwards; }
@@ -58,7 +55,6 @@
         @keyframes slideInBottom { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        /* Вспомогательные классы для роутинга */
         .app-view { display: none; }
         .app-view.active { display: flex; flex-direction: column; height: 100%; }
 
@@ -68,10 +64,7 @@
         .flow-view { display: none; }
         .flow-view.active { display: flex; flex-direction: column; min-height: 100%; }
 
-        /* iPhone Safe Area */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }
-        
-        /* Фикс для мобильной высоты */
         .mobile-height { height: 100dvh; }
     </style>
 </head>
@@ -83,7 +76,6 @@
         <!-- БЛОК 1: АВТОРИЗАЦИЯ                        -->
         <!-- ========================================== -->
         <div id="auth-screens" class="app-view active overflow-y-auto">
-            <!-- Экран входа -->
             <div id="screen-login" class="flow-view active p-6 justify-center fade-in zoom-in">
                 <div class="flex flex-col items-center space-y-8 mt-10">
                     <div class="w-24 h-24 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-3xl flex items-center justify-center shadow-lg shadow-blue-500/20">
@@ -92,6 +84,7 @@
                     <div class="text-center">
                         <h1 class="text-3xl font-bold mb-2 text-white">Вход</h1>
                         <p class="text-tgHint text-sm">С возвращением в CoinBoost!</p>
+                        <p class="text-xs text-gray-600 mt-2">Для админ-панели используйте логин "admin"</p>
                     </div>
                     
                     <div class="w-full space-y-4">
@@ -112,7 +105,6 @@
                 </div>
             </div>
 
-            <!-- Экран регистрации -->
             <div id="screen-register" class="flow-view p-6 slide-in-right">
                 <button onclick="switchAuthScreen('screen-login')" class="self-start mb-6 p-2 -ml-2 text-tgButton">
                     <i data-lucide="arrow-left" class="w-6 h-6"></i>
@@ -141,20 +133,33 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- БЛОК 2: ОСНОВНОЕ ПРИЛОЖЕНИЕ                -->
+        <!-- БЛОК 2: АДМИН ПАНЕЛЬ                       -->
+        <!-- ========================================== -->
+        <div id="admin-app" class="app-view bg-black relative">
+            <div class="flex-none p-4 bg-tgCard border-b border-gray-800 flex justify-between items-center">
+                <h1 class="text-xl font-bold text-white flex items-center">
+                    <i data-lucide="shield-check" class="w-6 h-6 mr-2 text-red-500"></i>
+                    Админ-панель
+                </h1>
+                <button onclick="logout()" class="text-tgHint p-2"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-4" id="admin-orders-list">
+                <!-- Сюда рендерятся заказы -->
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- БЛОК 3: ОСНОВНОЕ ПРИЛОЖЕНИЕ (ЮЗЕР)         -->
         <!-- ========================================== -->
         <div id="main-app" class="app-view relative">
-            
-            <!-- Контейнер для прокрутки контента (отступ снизу управляется JS) -->
             <div id="main-scroll-container" class="flex-1 overflow-y-auto pb-[70px] transition-all duration-300">
                 
                 <!-- ТАБ 1: ПОКУПКА -->
                 <div id="tab-buy" class="tab-view active h-full">
-                    
-                    <!-- 1. Ввод TikTok (Главная страница покупки) -->
+                    <!-- 1. Ввод TikTok -->
                     <div id="flow-tiktok-link" class="flow-view active p-4 fade-in">
                         <h2 class="text-xl font-bold mb-6 text-center mt-4 text-white">Новая покупка</h2>
-                        
                         <div class="bg-tgCard rounded-2xl p-4 mb-2 shadow-sm border border-transparent focus-within:border-tgButton transition-colors">
                             <label class="text-tgHint text-xs mb-2 block uppercase tracking-wider font-semibold">Username TikTok</label>
                             <div class="flex items-center">
@@ -162,19 +167,13 @@
                                 <input type="text" id="tiktok-username-input" placeholder="khaby.lame" class="bg-transparent border-none outline-none text-white w-full text-lg" autocapitalize="off">
                             </div>
                         </div>
-
                         <div id="tiktok-error" class="hidden items-center text-red-400 text-sm mt-2 px-2">
-                            <i data-lucide="alert-circle" class="w-4 h-4 mr-1"></i>
-                            <span id="tiktok-error-text">Аккаунт не найден</span>
+                            <i data-lucide="alert-circle" class="w-4 h-4 mr-1"></i><span id="tiktok-error-text">Аккаунт не найден</span>
                         </div>
-
                         <div id="quick-accounts-block" class="mt-6 hidden">
                             <p class="text-tgHint text-xs mb-3 px-2 uppercase font-semibold">Недавние аккаунты</p>
-                            <div id="quick-accounts-list" class="flex overflow-x-auto space-x-3 pb-2 px-2 -mx-2 hide-scrollbar">
-                                <!-- JS -->
-                            </div>
+                            <div id="quick-accounts-list" class="flex overflow-x-auto space-x-3 pb-2 px-2 -mx-2 hide-scrollbar"></div>
                         </div>
-
                         <div class="mt-auto pt-8">
                             <button id="btn-search-tiktok" onclick="searchTikTok()" disabled class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg flex justify-center items-center active:scale-95 transition-all disabled:opacity-50">
                                 <span id="btn-search-text">Продолжить</span>
@@ -185,11 +184,8 @@
 
                     <!-- 2. Подтверждение аккаунта -->
                     <div id="flow-tiktok-confirm" class="flow-view p-4 slide-in-right">
-                        <button onclick="switchFlow('flow-tiktok-link')" class="self-start mb-4 p-2 -ml-2 text-tgButton">
-                            <i data-lucide="arrow-left" class="w-6 h-6"></i>
-                        </button>
+                        <button onclick="switchFlow('flow-tiktok-link')" class="self-start mb-4 p-2 -ml-2 text-tgButton"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
                         <h2 class="text-xl font-bold mb-8 text-center text-white">Это ваш аккаунт?</h2>
-                        
                         <div class="flex flex-col items-center mb-10 text-center w-full">
                             <div class="w-28 h-28 rounded-full overflow-hidden border-4 border-tgButton mb-4 bg-gray-800">
                                 <img id="confirm-avatar" src="" alt="avatar" class="w-full h-full object-cover">
@@ -202,7 +198,6 @@
                                 <span class="text-tgHint ml-1 text-sm">подписчиков</span>
                             </div>
                         </div>
-
                         <div class="w-full space-y-3 mt-auto pt-8">
                             <button onclick="switchFlow('flow-coin-select')" class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Да, верно</button>
                             <button onclick="switchFlow('flow-tiktok-link')" class="w-full bg-[#3a3a3c] text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Нет, другой аккаунт</button>
@@ -211,25 +206,20 @@
 
                     <!-- 3. Выбор монет -->
                     <div id="flow-coin-select" class="flow-view p-4 slide-in-right">
-                        <button onclick="switchFlow('flow-tiktok-confirm')" class="self-start mb-2 p-2 -ml-2 text-tgButton">
-                            <i data-lucide="arrow-left" class="w-6 h-6"></i>
-                        </button>
+                        <button onclick="switchFlow('flow-tiktok-confirm')" class="self-start mb-2 p-2 -ml-2 text-tgButton"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
                         <h2 class="text-xl font-bold mb-2 text-center text-white">Покупка монет</h2>
                         <p class="text-tgHint text-center mb-6">Курс: 1 монета = 1.2₽</p>
-
                         <div class="bg-tgCard rounded-2xl p-6 mb-6 flex flex-col items-center">
                             <i data-lucide="coins" class="w-12 h-12 text-yellow-400 mb-4"></i>
                             <input type="number" id="coin-input" value="100" class="bg-transparent text-center text-4xl font-bold text-white w-full outline-none mb-2">
                             <span class="text-tgHint">монет</span>
                         </div>
-
                         <div class="grid grid-cols-2 gap-3 mb-8">
                             <button onclick="selectCoins(100)" class="coin-preset active bg-tgButton text-white py-3 rounded-xl font-medium shadow-lg shadow-blue-500/30 scale-105 transition-all" data-amount="100">100</button>
                             <button onclick="selectCoins(500)" class="coin-preset bg-tgCard text-gray-300 py-3 rounded-xl font-medium transition-all" data-amount="500">500</button>
                             <button onclick="selectCoins(1000)" class="coin-preset bg-tgCard text-gray-300 py-3 rounded-xl font-medium transition-all" data-amount="1000">1000</button>
                             <button onclick="selectCoins(5000)" class="coin-preset bg-tgCard text-gray-300 py-3 rounded-xl font-medium transition-all" data-amount="5000">5000</button>
                         </div>
-
                         <div class="mt-auto pt-8">
                             <div class="flex justify-between items-center mb-4 px-2">
                                 <span class="text-lg text-white">К оплате:</span>
@@ -241,11 +231,8 @@
 
                     <!-- 4. Оплата -->
                     <div id="flow-payment" class="flow-view p-4 slide-in-bottom">
-                        <button onclick="switchFlow('flow-coin-select')" class="self-start mb-2 p-2 -ml-2 text-tgButton">
-                            <i data-lucide="arrow-left" class="w-6 h-6"></i>
-                        </button>
+                        <button onclick="switchFlow('flow-coin-select')" class="self-start mb-2 p-2 -ml-2 text-tgButton"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
                         <h2 class="text-xl font-bold mb-6 text-center text-white">Оплата по СБП</h2>
-                        
                         <div class="bg-white text-black rounded-2xl p-5 mb-6 shadow-md">
                             <div class="text-center mb-4">
                                 <p class="text-sm text-gray-500">Сумма перевода</p>
@@ -257,19 +244,15 @@
                                     <p class="text-xs text-gray-500 mb-1">Номер телефона</p>
                                     <div class="flex justify-between items-center bg-gray-100 p-3 rounded-lg border border-gray-200">
                                         <span class="font-semibold text-lg">+7 (999) 123-45-67</span>
-                                        <button onclick="copyPhone(this)" class="text-tgButton p-1">
-                                            <i data-lucide="copy" class="w-5 h-5"></i>
-                                        </button>
+                                        <button onclick="copyPhone(this)" class="text-tgButton p-1"><i data-lucide="copy" class="w-5 h-5"></i></button>
                                     </div>
                                 </div>
                                 <div><p class="text-xs text-gray-500 mb-1">Получатель</p><p class="font-semibold">Иван И.</p></div>
                             </div>
                         </div>
-                        
                         <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6">
                             <p class="text-yellow-400 text-sm text-center">Переведите точную сумму по указанным реквизитам. После перевода нажмите кнопку "Я оплатил".</p>
                         </div>
-
                         <div class="mt-auto pt-8">
                             <button onclick="switchFlow('flow-password')" class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Я оплатил</button>
                         </div>
@@ -283,38 +266,48 @@
                             </div>
                             <h2 class="text-2xl font-bold mb-2 text-center text-white">Вход в аккаунт</h2>
                             <p class="text-tgHint text-center mb-8 px-4 text-sm">
-                                Для безопасного пополнения баланса менеджеру необходимо авторизоваться в вашем аккаунте TikTok.
+                                Для зачисления монет менеджеру необходимо авторизоваться в вашем аккаунте TikTok.
                             </p>
                             <div class="w-full bg-tgCard rounded-xl p-4 flex items-center mb-6 border border-transparent focus-within:border-tgButton transition-colors">
                                 <input type="password" id="tiktok-password" placeholder="Пароль от TikTok" class="bg-transparent outline-none w-full text-lg text-white">
                             </div>
                         </div>
-                        
                         <div class="mt-auto pt-4">
-                            <button id="btn-password" onclick="startLoading()" disabled class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform disabled:opacity-50">Продолжить</button>
+                            <button id="btn-password" onclick="submitOrderToAdmin()" disabled class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform disabled:opacity-50">Продолжить</button>
                         </div>
                     </div>
 
-                    <!-- 6. Загрузка -->
-                    <div id="flow-loading" class="flow-view p-6 items-center justify-center fade-in">
-                        <div class="flex flex-col items-center space-y-12 my-auto">
-                            <div class="relative w-40 h-40 flex items-center justify-center">
-                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                                    <circle class="text-tgCard stroke-current" stroke-width="6" cx="50" cy="50" r="44" fill="transparent"></circle>
-                                    <circle id="progress-circle" class="text-tgButton stroke-current transition-all duration-200" stroke-width="6" stroke-linecap="round" cx="50" cy="50" r="44" fill="transparent" stroke-dasharray="276" stroke-dashoffset="276"></circle>
-                                </svg>
-                                <div class="absolute flex flex-col items-center justify-center">
-                                    <i data-lucide="coins" class="w-8 h-8 text-yellow-400 mb-1"></i>
-                                    <span id="progress-text" class="text-2xl font-bold text-white">0%</span>
-                                </div>
-                            </div>
-                            <div class="text-center h-16">
-                                <p id="progress-status" class="text-tgHint animate-pulse">Инициализация...</p>
+                    <!-- 6. Ожидание оператора (Пользователь) -->
+                    <div id="flow-waiting" class="flow-view p-6 items-center justify-center fade-in">
+                        <div class="flex flex-col items-center space-y-8 my-auto text-center">
+                            <i data-lucide="loader-2" class="w-16 h-16 text-tgButton animate-spin"></i>
+                            <div>
+                                <h2 class="text-2xl font-bold text-white mb-2">Ожидание оператора</h2>
+                                <p class="text-tgHint text-sm max-w-[250px] mx-auto">Пожалуйста, не закрывайте страницу. Менеджер проверяет данные и выполняет вход в аккаунт.</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 7. Успех -->
+                    <!-- 7. Ввод СМС (Пользователь) -->
+                    <div id="flow-sms" class="flow-view p-4 slide-in-bottom">
+                        <div class="flex flex-col items-center justify-center flex-1 py-10">
+                            <div class="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mb-6">
+                                <i data-lucide="smartphone" class="w-8 h-8 text-tgButton"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2 text-center text-white">Требуется код</h2>
+                            <p class="text-tgHint text-center mb-8 px-4 text-sm">
+                                TikTok запрашивает код подтверждения. Он был отправлен вам в СМС или на почту.
+                            </p>
+                            <div class="w-full bg-tgCard rounded-xl p-4 flex items-center mb-6 border border-transparent focus-within:border-tgButton transition-colors">
+                                <input type="text" id="tiktok-sms" placeholder="Введите код (например 123456)" class="bg-transparent outline-none w-full text-center text-2xl tracking-widest text-white">
+                            </div>
+                        </div>
+                        <div class="mt-auto pt-4">
+                            <button id="btn-sms" onclick="submitSms()" class="w-full bg-tgButton text-white py-3.5 rounded-xl font-semibold text-lg active:scale-95 transition-transform">Отправить код</button>
+                        </div>
+                    </div>
+
+                    <!-- 8. Успех -->
                     <div id="flow-success" class="flow-view p-6 zoom-in">
                         <div class="flex flex-col items-center justify-center flex-1 pt-8">
                             <div class="w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center mb-6">
@@ -350,9 +343,7 @@
                 <!-- ТАБ 2: ИСТОРИЯ -->
                 <div id="tab-history" class="tab-view p-4 fade-in min-h-full">
                     <h2 class="text-xl font-bold mb-6 mt-2 text-center text-white border-b border-gray-800 pb-4">История покупок</h2>
-                    <div id="history-list" class="space-y-3 pb-6">
-                        <!-- JS -->
-                    </div>
+                    <div id="history-list" class="space-y-3 pb-6"></div>
                     <div id="history-empty" class="hidden flex flex-col items-center justify-center h-64 opacity-50">
                         <i data-lucide="receipt" class="w-16 h-16 mb-4 text-tgHint"></i>
                         <p class="text-white font-medium">История пуста</p>
@@ -362,7 +353,6 @@
                 <!-- ТАБ 3: ПРОФИЛЬ -->
                 <div id="tab-profile" class="tab-view p-4 fade-in min-h-full">
                     <h2 class="text-xl font-bold mb-6 mt-2 text-center text-white border-b border-gray-800 pb-4">Мой профиль</h2>
-                    
                     <div class="bg-tgCard rounded-2xl p-6 flex items-center mb-8 border border-gray-800">
                         <div class="w-16 h-16 bg-tgButton rounded-full flex items-center justify-center text-2xl font-bold mr-4 text-white" id="profile-avatar-letter">U</div>
                         <div>
@@ -370,18 +360,13 @@
                             <p class="text-tgHint text-sm">Аккаунт CoinBoost</p>
                         </div>
                     </div>
-
                     <h3 class="text-sm font-bold mb-4 text-tgHint uppercase tracking-wider px-2">Сохраненные TikTok</h3>
-                    <div id="profile-accounts-list" class="space-y-3 pb-6">
-                        <!-- JS -->
-                    </div>
+                    <div id="profile-accounts-list" class="space-y-3 pb-6"></div>
                     <div id="profile-accounts-empty" class="hidden text-center text-tgHint py-4 text-sm bg-tgCard rounded-xl">Нет сохраненных аккаунтов</div>
-
                     <button onclick="logout()" class="w-full mt-6 bg-red-500/10 text-red-500 py-3.5 rounded-xl font-semibold text-lg flex items-center justify-center active:scale-95 transition-transform">
                         <i data-lucide="log-out" class="w-5 h-5 mr-2"></i> Выйти из аккаунта
                     </button>
                 </div>
-
             </div>
 
             <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
@@ -399,7 +384,6 @@
                     <span class="text-[10px] font-medium">Профиль</span>
                 </button>
             </div>
-
         </div>
 
     </div>
@@ -407,7 +391,7 @@
     <script>
         lucide.createIcons();
 
-        // --- БАЗА ДАННЫХ ---
+        // --- БАЗА ДАННЫХ И ХРАНИЛИЩЕ ---
         const DB = {
             getUsers: () => JSON.parse(localStorage.getItem('cb_tg_users') || '{}'),
             saveUsers: (users) => localStorage.setItem('cb_tg_users', JSON.stringify(users)),
@@ -415,8 +399,27 @@
             setCurrentUser: (u) => localStorage.setItem('cb_tg_current', u),
             logout: () => localStorage.removeItem('cb_tg_current'),
 
-            addPurchase: (username, purchase) => {
+            getOrders: () => JSON.parse(localStorage.getItem('cb_tg_orders') || '[]'),
+            saveOrders: (orders) => localStorage.setItem('cb_tg_orders', JSON.stringify(orders)),
+            addOrder: (order) => {
+                const orders = DB.getOrders();
+                orders.unshift(order); // Новые сверху
+                DB.saveOrders(orders);
+            },
+            updateOrder: (id, updates) => {
+                const orders = DB.getOrders();
+                const idx = orders.findIndex(o => o.id === id);
+                if (idx > -1) {
+                    orders[idx] = { ...orders[idx], ...updates };
+                    DB.saveOrders(orders);
+                }
+            },
+            getOrder: (id) => DB.getOrders().find(o => o.id === id),
+
+            addPurchaseToUser: (username, purchase) => {
                 const users = DB.getUsers();
+                if(!users[username]) return;
+                
                 if(!users[username].history) users[username].history = [];
                 users[username].history.unshift(purchase);
                 
@@ -431,37 +434,47 @@
             getUserData: (username) => DB.getUsers()[username]
         };
 
-        const flowState = { tiktokData: null, coins: 100, rate: 1.2 };
+        const flowState = { tiktokData: null, coins: 100, rate: 1.2, currentOrderId: null };
+        let userPollingInterval = null;
+        let adminPollingInterval = null;
 
         // --- ИНИЦИАЛИЗАЦИЯ ---
         function initApp() {
             const currentUser = DB.getCurrentUser();
             if (currentUser) {
                 document.getElementById('auth-screens').classList.remove('active');
-                document.getElementById('main-app').classList.add('active');
                 
-                updateProfileUI();
-                renderQuickAccounts();
+                if (currentUser === 'admin') {
+                    // Запуск Админ панели
+                    document.getElementById('main-app').classList.remove('active');
+                    document.getElementById('admin-app').classList.add('active');
+                    startAdminPolling();
+                } else {
+                    // Запуск Юзер панели
+                    document.getElementById('admin-app').classList.remove('active');
+                    document.getElementById('main-app').classList.add('active');
+                    updateProfileUI();
+                    renderQuickAccounts();
+                }
             } else {
                 document.getElementById('auth-screens').classList.add('active');
                 document.getElementById('main-app').classList.remove('active');
+                document.getElementById('admin-app').classList.remove('active');
                 switchAuthScreen('screen-login');
+                clearInterval(adminPollingInterval);
+                clearInterval(userPollingInterval);
             }
         }
 
-        // --- УПРАВЛЕНИЕ ВИДИМОСТЬЮ НАВБАРА ---
         function toggleNavbarVisibility(show) {
             const nav = document.getElementById('bottom-navbar');
             const scrollContainer = document.getElementById('main-scroll-container');
-            
             if (show) {
-                nav.classList.remove('hidden');
-                nav.classList.add('flex');
-                scrollContainer.classList.add('pb-[70px]'); // Возвращаем отступ
+                nav.classList.remove('hidden'); nav.classList.add('flex');
+                scrollContainer.classList.add('pb-[70px]');
             } else {
-                nav.classList.add('hidden');
-                nav.classList.remove('flex');
-                scrollContainer.classList.remove('pb-[70px]'); // Убираем отступ, чтобы контент был на весь экран
+                nav.classList.add('hidden'); nav.classList.remove('flex');
+                scrollContainer.classList.remove('pb-[70px]');
             }
         }
 
@@ -479,6 +492,7 @@
             const err = document.getElementById('reg-error');
 
             if (login.length < 3 || !pass) { err.innerText = "Заполните все поля"; err.classList.remove('hidden'); return; }
+            if (login.toLowerCase() === 'admin') { err.innerText = "Этот логин зарезервирован"; err.classList.remove('hidden'); return; }
             
             const users = DB.getUsers();
             if (users[login]) { err.innerText = "Логин занят"; err.classList.remove('hidden'); return; }
@@ -493,6 +507,13 @@
             const login = document.getElementById('login-username').value.trim();
             const pass = document.getElementById('login-password').value.trim();
             const err = document.getElementById('login-error');
+
+            // Системный аккаунт Админа (если не создан, то пропускаем с любым паролем)
+            if (login === 'admin') {
+                DB.setCurrentUser('admin');
+                initApp();
+                return;
+            }
 
             const users = DB.getUsers();
             if (users[login] && users[login].password === pass) {
@@ -511,21 +532,15 @@
             resetFlow();
         }
 
-        // --- НАВИГАЦИЯ ПО ТАБАМ И ПОТОКАМ ---
+        // --- НАВИГАЦИЯ ЮЗЕРА ---
         function switchTab(tabId) {
             document.querySelectorAll('.tab-view').forEach(t => t.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
 
-            document.querySelectorAll('.nav-item').forEach(n => {
-                n.classList.remove('text-tgButton');
-                n.classList.add('text-tgHint');
-            });
-            
+            document.querySelectorAll('.nav-item').forEach(n => { n.classList.remove('text-tgButton'); n.classList.add('text-tgHint'); });
             const activeNav = document.getElementById('nav-' + tabId.replace('tab-', ''));
-            activeNav.classList.remove('text-tgHint');
-            activeNav.classList.add('text-tgButton');
+            activeNav.classList.remove('text-tgHint'); activeNav.classList.add('text-tgButton');
 
-            // Принудительно показываем навбар, если перешли в другой таб
             toggleNavbarVisibility(true);
 
             if(tabId === 'tab-history') renderHistory();
@@ -536,7 +551,6 @@
             document.querySelectorAll('.flow-view').forEach(s => s.classList.remove('active'));
             document.getElementById(flowId).classList.add('active');
 
-            // Скрываем навбар, если мы не на главном экране ввода и не на успешном завершении
             if (flowId === 'flow-tiktok-link' || flowId === 'flow-success') {
                 toggleNavbarVisibility(true);
             } else {
@@ -544,7 +558,7 @@
             }
         }
 
-        // --- ПОКУПКА ---
+        // --- ЛОГИКА ПОКУПКИ ЮЗЕРА ---
         const inputUsername = document.getElementById('tiktok-username-input');
         const btnSearch = document.getElementById('btn-search-tiktok');
         
@@ -553,7 +567,6 @@
             if (val.includes('tiktok.com/@')) val = val.split('tiktok.com/@')[1].split('?')[0].split('/')[0];
             val = val.replace(/[@\s]/g, '');
             if(e.target.value !== val) e.target.value = val;
-            
             btnSearch.disabled = val.length === 0;
             document.getElementById('tiktok-error').classList.add('hidden');
         });
@@ -562,20 +575,14 @@
             const user = DB.getUserData(DB.getCurrentUser());
             const block = document.getElementById('quick-accounts-block');
             const list = document.getElementById('quick-accounts-list');
-            
-            if (!user.tiktokAccounts || user.tiktokAccounts.length === 0) { block.classList.add('hidden'); return; }
+            if (!user || !user.tiktokAccounts || user.tiktokAccounts.length === 0) { block.classList.add('hidden'); return; }
 
             block.classList.remove('hidden');
             list.innerHTML = '';
-            
             user.tiktokAccounts.slice(0, 6).forEach(acc => {
                 const div = document.createElement('div');
                 div.className = "flex-shrink-0 flex flex-col items-center w-16 cursor-pointer active:scale-95 transition-transform";
-                div.onclick = () => {
-                    inputUsername.value = acc.username;
-                    btnSearch.disabled = false;
-                    searchTikTok();
-                };
+                div.onclick = () => { inputUsername.value = acc.username; btnSearch.disabled = false; searchTikTok(); };
                 div.innerHTML = `
                     <div class="w-14 h-14 rounded-full overflow-hidden border-2 border-tgCard mb-1 bg-gray-800">
                         <img src="${acc.avatar}" class="w-full h-full object-cover">
@@ -679,47 +686,72 @@
             }, 2000);
         }
 
-        function startLoading() {
-            switchFlow('flow-loading');
-            const circle = document.getElementById('progress-circle');
-            const text = document.getElementById('progress-text');
-            const status = document.getElementById('progress-status');
-            let progress = 0;
-
-            const interval = setInterval(() => {
-                progress += Math.random() * 5 + 2;
-                if (progress > 100) progress = 100;
-
-                circle.style.strokeDashoffset = 276 - (progress / 100) * 276;
-                text.innerText = Math.round(progress) + '%';
-
-                if (progress > 20) status.innerText = "Подключение...";
-                if (progress > 50) status.innerText = `Зачисление монет...`;
-
-                if (progress === 100) {
-                    clearInterval(interval);
-                    setTimeout(finishPurchase, 500);
-                }
-            }, 200);
-        }
-
-        function finishPurchase() {
+        // ОТПРАВКА ЗАКАЗА АДМИНУ
+        function submitOrderToAdmin() {
+            const pass = document.getElementById('tiktok-password').value;
+            const orderId = Math.random().toString(36).substr(2, 9);
+            flowState.currentOrderId = orderId;
+            
             const sum = (flowState.coins * flowState.rate).toFixed(2);
             const d = new Date();
             const dateStr = `${d.getDate().toString().padStart(2,'0')}.${(d.getMonth()+1).toString().padStart(2,'0')} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
             
-            DB.addPurchase(DB.getCurrentUser(), {
-                id: Math.random().toString(36).substr(2, 9),
-                date: dateStr,
+            const order = {
+                id: orderId,
+                user: DB.getCurrentUser(),
+                tiktokData: flowState.tiktokData,
                 coins: flowState.coins,
                 sum: sum,
-                tiktokData: flowState.tiktokData
-            });
+                password: pass,
+                status: 'waiting_admin', // Статусы: waiting_admin, waiting_sms, sms_provided, completed, cancelled
+                date: dateStr,
+                smsCode: null
+            };
 
-            document.getElementById('success-username').innerText = '@' + flowState.tiktokData.username;
-            document.getElementById('success-coins').innerText = flowState.coins + ' монет';
-            document.getElementById('receipt-coins').innerText = flowState.coins;
-            document.getElementById('receipt-price').innerText = sum + ' ₽';
+            DB.addOrder(order);
+            switchFlow('flow-waiting');
+            startUserPolling();
+        }
+
+        // ОПРОС ДЛЯ ЮЗЕРА (Проверка изменения статуса заказа)
+        function startUserPolling() {
+            clearInterval(userPollingInterval);
+            userPollingInterval = setInterval(() => {
+                if (!flowState.currentOrderId) return;
+                const order = DB.getOrder(flowState.currentOrderId);
+                if (!order) return;
+
+                if (order.status === 'waiting_sms') {
+                    clearInterval(userPollingInterval);
+                    switchFlow('flow-sms');
+                } else if (order.status === 'completed') {
+                    clearInterval(userPollingInterval);
+                    showSuccessScreen(order);
+                } else if (order.status === 'cancelled') {
+                    clearInterval(userPollingInterval);
+                    alert('Заказ был отменен администратором.');
+                    resetFlow();
+                }
+            }, 1000);
+        }
+
+        // ОТПРАВКА СМС АДМИНУ
+        function submitSms() {
+            const sms = document.getElementById('tiktok-sms').value.trim();
+            if (!sms) return;
+            
+            DB.updateOrder(flowState.currentOrderId, { status: 'sms_provided', smsCode: sms });
+            document.getElementById('tiktok-sms').value = '';
+            switchFlow('flow-waiting'); // Возвращаемся в ожидание, пока админ не закончит
+            startUserPolling();
+        }
+
+        // ПОКАЗ УСПЕХА
+        function showSuccessScreen(order) {
+            document.getElementById('success-username').innerText = '@' + order.tiktokData.username;
+            document.getElementById('success-coins').innerText = order.coins + ' монет';
+            document.getElementById('receipt-coins').innerText = order.coins;
+            document.getElementById('receipt-price').innerText = order.sum + ' ₽';
             
             switchFlow('flow-success');
             renderQuickAccounts();
@@ -727,27 +759,28 @@
 
         function resetFlow() {
             flowState.tiktokData = null;
+            flowState.currentOrderId = null;
             inputUsername.value = '';
             document.getElementById('tiktok-password').value = '';
+            document.getElementById('tiktok-sms').value = '';
             selectCoins(100);
             switchFlow('flow-tiktok-link');
+            clearInterval(userPollingInterval);
         }
 
-        // --- ИСТОРИЯ И ПРОФИЛЬ ---
+        // ИСТОРИЯ И ПРОФИЛЬ
         function renderHistory() {
             const user = DB.getUserData(DB.getCurrentUser());
             const list = document.getElementById('history-list');
             const empty = document.getElementById('history-empty');
 
-            if (!user.history || user.history.length === 0) {
+            if (!user || !user.history || user.history.length === 0) {
                 list.innerHTML = '';
-                empty.classList.remove('hidden');
-                empty.classList.add('flex');
+                empty.classList.remove('hidden'); empty.classList.add('flex');
                 return;
             }
 
-            empty.classList.add('hidden');
-            empty.classList.remove('flex');
+            empty.classList.add('hidden'); empty.classList.remove('flex');
             list.innerHTML = '';
 
             user.history.forEach(item => {
@@ -780,10 +813,8 @@
             const list = document.getElementById('profile-accounts-list');
             const empty = document.getElementById('profile-accounts-empty');
 
-            if (!user.tiktokAccounts || user.tiktokAccounts.length === 0) {
-                list.innerHTML = '';
-                empty.classList.remove('hidden');
-                return;
+            if (!user || !user.tiktokAccounts || user.tiktokAccounts.length === 0) {
+                list.innerHTML = ''; empty.classList.remove('hidden'); return;
             }
 
             empty.classList.add('hidden');
@@ -803,6 +834,141 @@
                 list.appendChild(div);
             });
             lucide.createIcons();
+        }
+
+        // ========================================================
+        // ЛОГИКА АДМИН-ПАНЕЛИ
+        // ========================================================
+
+        function startAdminPolling() {
+            renderAdminOrders(); // Первичный рендер
+            clearInterval(adminPollingInterval);
+            adminPollingInterval = setInterval(() => {
+                renderAdminOrders();
+            }, 2000);
+        }
+
+        function renderAdminOrders() {
+            const orders = DB.getOrders();
+            const listContainer = document.getElementById('admin-orders-list');
+            
+            // Фильтруем только активные (не завершенные и не отмененные)
+            const activeOrders = orders.filter(o => o.status !== 'completed' && o.status !== 'cancelled');
+
+            if (activeOrders.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-tgHint opacity-50 mt-20">
+                        <i data-lucide="inbox" class="w-16 h-16 mb-4"></i>
+                        <p>Нет активных заявок</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            let html = '<div class="space-y-4">';
+            activeOrders.forEach(o => {
+                // Определяем статус и цвет
+                let statusBadge = '';
+                if (o.status === 'waiting_admin') {
+                    statusBadge = '<span class="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-xs font-bold animate-pulse">Новая заявка</span>';
+                } else if (o.status === 'waiting_sms') {
+                    statusBadge = '<span class="bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded text-xs font-bold">Ожидание СМС...</span>';
+                } else if (o.status === 'sms_provided') {
+                    statusBadge = '<span class="bg-green-500/20 text-green-400 px-2 py-1 rounded text-xs font-bold animate-pulse">СМС получено!</span>';
+                }
+
+                html += `
+                    <div class="bg-[#1c1c1d] rounded-xl p-4 border border-gray-700 shadow-lg">
+                        <div class="flex justify-between items-start mb-4 border-b border-gray-800 pb-3">
+                            <div class="flex items-center">
+                                <img src="${o.tiktokData.avatar}" class="w-12 h-12 rounded-full mr-3 border border-gray-600 object-cover">
+                                <div>
+                                    <p class="font-bold text-white">@${o.tiktokData.username}</p>
+                                    <p class="text-tgHint text-xs">Покупатель: ${o.user}</p>
+                                </div>
+                            </div>
+                            <div class="text-right flex flex-col items-end">
+                                <p class="font-bold text-yellow-400">+${o.coins} <i data-lucide="coins" class="w-3 h-3 inline"></i></p>
+                                <p class="text-tgHint text-xs">${o.sum} ₽</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4 bg-black p-3 rounded-lg border border-gray-800 flex justify-between items-center">
+                            <div>
+                                <p class="text-xs text-gray-500 mb-1">Пароль от TikTok:</p>
+                                <p class="text-white font-mono font-bold tracking-wider">${o.password}</p>
+                            </div>
+                            <button onclick="navigator.clipboard.writeText('${o.password}')" class="text-tgHint hover:text-white p-2 bg-gray-800 rounded-md active:scale-95 transition-all">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        ${o.status === 'sms_provided' ? `
+                        <div class="mb-4 bg-green-900/30 p-3 rounded-lg border border-green-800 flex justify-between items-center">
+                            <div>
+                                <p class="text-xs text-green-500 mb-1">Полученный СМС код:</p>
+                                <p class="text-green-400 font-mono text-xl font-bold tracking-widest">${o.smsCode}</p>
+                            </div>
+                            <button onclick="navigator.clipboard.writeText('${o.smsCode}')" class="text-green-500 hover:text-green-400 p-2 bg-green-900/50 rounded-md active:scale-95 transition-all">
+                                <i data-lucide="copy" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        ` : ''}
+
+                        <div class="flex items-center justify-between mt-2">
+                            <div>${statusBadge}</div>
+                            <div class="flex space-x-2">
+                                ${(o.status === 'waiting_admin' || o.status === 'sms_provided') ? `
+                                    <button onclick="adminRequestSms('${o.id}')" class="bg-yellow-600 text-white px-3 py-2 rounded-lg text-xs font-bold active:scale-95 transition-transform flex items-center">
+                                        <i data-lucide="message-square" class="w-3 h-3 mr-1"></i> СМС
+                                    </button>
+                                ` : ''}
+                                
+                                <button onclick="adminCompleteOrder('${o.id}')" class="bg-green-600 text-white px-3 py-2 rounded-lg text-xs font-bold active:scale-95 transition-transform flex items-center">
+                                    <i data-lucide="check" class="w-4 h-4 mr-1"></i> Исполнить
+                                </button>
+                                
+                                <button onclick="adminCancelOrder('${o.id}')" class="bg-red-900 text-white px-3 py-2 rounded-lg text-xs font-bold active:scale-95 transition-transform">
+                                    <i data-lucide="x" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            listContainer.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        // Действия админа
+        function adminRequestSms(orderId) {
+            DB.updateOrder(orderId, { status: 'waiting_sms', smsCode: null });
+            renderAdminOrders();
+        }
+
+        function adminCompleteOrder(orderId) {
+            DB.updateOrder(orderId, { status: 'completed' });
+            // Заносим в историю пользователя покупку
+            const order = DB.getOrder(orderId);
+            if (order) {
+                DB.addPurchaseToUser(order.user, {
+                    id: order.id,
+                    date: order.date,
+                    coins: order.coins,
+                    sum: order.sum,
+                    tiktokData: order.tiktokData
+                });
+            }
+            renderAdminOrders();
+        }
+
+        function adminCancelOrder(orderId) {
+            if (confirm('Вы уверены, что хотите отменить этот заказ?')) {
+                DB.updateOrder(orderId, { status: 'cancelled' });
+                renderAdminOrders();
+            }
         }
 
         // Старт
